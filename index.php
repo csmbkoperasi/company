@@ -69,17 +69,119 @@ while($row = $c_qry->fetch_assoc()){
 }
 // var_dump($contact['facebook']);
 ?>
+<?php
+// === Helpers untuk Google Maps ===
+function build_embed_from_input($raw, $addr=''){
+  $raw  = trim((string)$raw);
+  $addr = trim(preg_replace('/\s+/', ' ', strip_tags((string)$addr)));
+
+  if ($raw === '') {
+    return $addr !== '' ? 'https://www.google.com/maps?q='.rawurlencode($addr).'&output=embed' : '';
+  }
+  // kalau admin paste <iframe ... src="...">
+  if (stripos($raw, '<iframe') !== false && preg_match('/src=["\']([^"\']+)["\']/i', $raw, $m)) {
+    return $m[1];
+  }
+  // kalau sudah embed URL
+  if (strpos($raw, '/maps/embed?') !== false) {
+    return $raw;
+  }
+  // share link dengan @lat,lng
+  if (preg_match('/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/', $raw, $m)) {
+    return 'https://www.google.com/maps?q='.$m[1].','.$m[2].'&z=16&output=embed';
+  }
+  // share link dengan ?q=
+  if (preg_match('/[?&]q=([^&]+)/', $raw, $m)) {
+    $q = urldecode($m[1]);
+    return 'https://www.google.com/maps?q='.rawurlencode($q).'&output=embed';
+  }
+  // fallback alamat
+  return $addr !== '' ? 'https://www.google.com/maps?q='.rawurlencode($addr).'&output=embed' : '';
+}
+
+function build_click_from_input($raw, $addr=''){
+  $raw  = trim((string)$raw);
+  $addr = trim(preg_replace('/\s+/', ' ', strip_tags((string)$addr)));
+
+  // Jika admin paste <iframe>, ambil src-nya dulu
+  if ($raw !== '' && stripos($raw, '<iframe') !== false && preg_match('/src=["\']([^"\']+)["\']/i', $raw, $m)) {
+    $raw = $m[1];
+  }
+
+  // 1) Share link model .../@<lat>,<lng>...
+  if ($raw !== '' && preg_match('/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/', $raw, $mm)) {
+    return 'https://www.google.com/maps/search/?api=1&query='.$mm[1].','.$mm[2];
+  }
+
+  // 2) URL embed (…/maps/embed?pb=…) – ekstrak koordinat dari pb
+  if ($raw !== '' && (strpos($raw, '/maps/embed?') !== false || strpos($raw, 'pb=') !== false)) {
+    // Pola !3d<lat>!4d<lng>
+    if (preg_match('/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/', $raw, $m34)) {
+      $lat = $m34[1]; $lng = $m34[2];
+      return 'https://www.google.com/maps/search/?api=1&query='.$lat.','.$lng;
+    }
+    // Pola !2d<lng>!3d<lat>
+    if (preg_match('/!2d(-?\d+(?:\.\d+)?)!3d(-?\d+(?:\.\d+)?)/', $raw, $m23)) {
+      $lng = $m23[1]; $lat = $m23[2];
+      return 'https://www.google.com/maps/search/?api=1&query='.$lat.','.$lng;
+    }
+    // Fallback: pakai alamat
+    if ($addr !== '') {
+      return 'https://www.google.com/maps/search/?api=1&query='.rawurlencode($addr);
+    }
+  }
+
+  // 3) Link biasa (maps.app.goo.gl, /place, dsb) – pakai apa adanya
+  if ($raw !== '') return $raw;
+
+  // 4) Fallback terakhir: alamat
+  if ($addr !== '') {
+    return 'https://www.google.com/maps/search/?api=1&query='.rawurlencode($addr);
+  }
+
+  return '';
+}
+
+
+
+// === Data kontak & map yang dipakai di seluruh halaman ===
+$tel     = isset($contact['mobile']) ? preg_replace('/\D+/', '', $contact['mobile']) : '';
+$email   = trim($contact['email'] ?? '');
+$addr    = trim(preg_replace('/\s+/', ' ', strip_tags($contact['address'] ?? '')));
+$rawMap  = trim($contact['map_embed'] ?? '');
+
+$embedSrc  = build_embed_from_input($rawMap, $addr);  // untuk <iframe>
+$clickLink = build_click_from_input($rawMap, $addr);  // untuk tombol ikon peta
+?>
+
       <div class="row banner">
          <div class="banner-text">
             <h1 class="responsive-headline"><?php echo $_settings->info('name') ?></h1>
             <h3><?php echo stripslashes($_settings->info('welcome_message')) ?></h3>
             <hr />
-            <ul class="social">
-               <li><a target="_blank" href="<?php echo $contact['facebook'] ?>"><i class="fa fa-facebook"></i></a></li>
-               <li><a target="_blank" href="<?php echo $contact['twitter'] ?>"><i class="fa fa-twitter"></i></a></li>
-               <li><a target="_blank" href="mailto:<?php echo $contact['email'] ?>"><i class="fa fa-google-plus"></i></a></li>
-               <li><a target="_blank" href="<?php echo $contact['linkin'] ?>"><i class="fa fa-linkedin"></i></a></li>
-            </ul>
+            
+
+<ul class="social contact-actions">
+  <?php if ($tel): ?>
+    <li><a href="<?= htmlspecialchars('tel:' . $tel, ENT_QUOTES) ?>" class="btn-icon" title="Telepon" aria-label="Telepon">
+      <i class="fa fa-phone"></i></a></li>
+  <?php endif; ?>
+
+  <?php if ($email !== ''): ?>
+    <li><a href="<?= htmlspecialchars('mailto:' . $email, ENT_QUOTES) ?>" class="btn-icon" title="Email" aria-label="Email">
+      <i class="fa fa-envelope"></i></a></li>
+  <?php endif; ?>
+
+  <?php if ($clickLink !== ''): ?>
+    <li><a href="<?= htmlspecialchars($clickLink, ENT_QUOTES) ?>" target="_blank" rel="noopener"
+           class="btn-icon" title="Lihat Lokasi" aria-label="Lihat Lokasi">
+      <i class="fa fa-map-marker"></i></a></li>
+  <?php endif; ?>
+</ul>
+
+
+
+
          </div>
       </div>
 
@@ -281,34 +383,39 @@ while($row = $c_qry->fetch_assoc()){
          </div> <!-- row ends -->
 
        </div>  <!-- text-container ends -->
+</section> <!-- end #testimonials -->
+
 
    <section id="contact_us" class="contact-section">
-         <div class="contact-container">
-            <h2 class="contact-title">Kontak & Lokasi</h2>
+  <div class="contact-container">
+    <h2 class="contact-title">Kontak & Lokasi</h2>
 
-            <div class="contact-grid">
-               <!-- Kartu Informasi Kontak -->
-               <div class="contact-card">
-               <h3>Informasi Kontak</h3>
-               <p><strong>Phone:</strong> <a href="tel:<?php echo $contact['mobile'] ?>"><?php echo $contact['mobile'] ?></a></p>
-               <p><strong>Email:</strong> <a href="mailto:<?php echo $contact['email'] ?>"><?php echo $contact['email'] ?></a></p>
-               <p><?php echo $contact['address'] ?></p>
-               </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <h3>Informasi Kontak</h3>
+        <p><strong>Phone:</strong> <a href="tel:<?php echo $contact['mobile'] ?>"><?php echo $contact['mobile'] ?></a></p>
+        <p><strong>Email:</strong> <a href="mailto:<?php echo $contact['email'] ?>"><?php echo $contact['email'] ?></a></p>
+        <p><?php echo $contact['address'] ?></p>
+      </div>
 
-               <!-- Google Maps -->
-               <div class="map-card">
-               <div class="map-responsive">
-                  <iframe
-                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.97667980655!2d106.52285507587683!3d-6.266797193721884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e42072c366e5039%3A0x9893e624bb3ff43f!2sKoperasi%20Nawasena%20Sanggah%20Bersama!5e0!3m2!1sid!2sid!4v1758613426665!5m2!1sid!2sid"
-                     allowfullscreen
-                     loading="lazy"
-                     referrerpolicy="no-referrer-when-downgrade">
-                  </iframe>
-               </div>
-               </div>
-            </div>
-         </div>
-         </section>
+      <div class="map-card">
+        <div class="map-responsive">
+          <?php if (!empty($embedSrc)): ?>
+            <iframe
+              src="<?php echo htmlspecialchars($embedSrc, ENT_QUOTES); ?>"
+              allowfullscreen
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          <?php else: ?>
+            <div class="text-center p-4">Peta belum disetel.</div>
+          <?php endif; ?>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       <?php require_once('inc/footer.php') ?>
   </body>

@@ -18,12 +18,51 @@ footer .copyright {
 
          <div class="twelve columns">
 
-            <ul class="social-links">
-               <li><a target ="_blank" href="<?php echo $contact['facebook'] ?>"><i class="fa fa-facebook"></i></a></li>
-               <li><a target ="_blank" href="<?php echo $contact['twitter'] ?>"><i class="fa fa-twitter"></i></a></li>
-               <li><a target ="_blank" href="mailto:<?php echo $contact['email'] ?>"><i class="fa fa-google-plus"></i></a></li>
-               <li><a target ="_blank" href="<?php echo $contact['linkin'] ?>"><i class="fa fa-linkedin"></i></a></li>
-            </ul>
+            <?php
+// --- siapkan data kontak & link maps aman untuk footer ---
+$tel   = isset($contact['mobile']) ? preg_replace('/\D+/', '', $contact['mobile']) : '';
+$email = trim($contact['email'] ?? '');
+$addr  = trim(preg_replace('/\s+/', ' ', strip_tags($contact['address'] ?? '')));
+$raw   = trim($contact['map_embed'] ?? '');   // bisa short link / embed / iframe
+
+// normalkan: kalau admin tempel <iframe>, ambil src-nya
+if ($raw !== '' && stripos($raw, '<iframe') !== false && preg_match('/src=["\']([^"\']+)["\']/i', $raw, $m)) {
+  $raw = $m[1];
+}
+
+// bangun link klik maps (hindari /maps/embed? langsung)
+$mapClick = '';
+if ($raw !== '') {
+  if (strpos($raw, '/maps/embed?') !== false || strpos($raw, 'pb=') !== false) {
+    // coba ekstrak lat,lng dari string pb
+    if (preg_match('/!3d(-?\d+(?:\.\d+)?)[^!]*!4d(-?\d+(?:\.\d+)?)/', $raw, $m34)) {
+      $mapClick = 'https://www.google.com/maps/search/?api=1&query='.$m34[1].','.$m34[2];
+    } elseif (preg_match('/!2d(-?\d+(?:\.\d+)?)[^!]*!3d(-?\d+(?:\.\d+)?)/', $raw, $m23)) {
+      $mapClick = 'https://www.google.com/maps/search/?api=1&query='.$m23[2].','.$m23[1];
+    } else {
+      $mapClick = $addr ? 'https://www.google.com/maps/search/?api=1&query='.rawurlencode($addr) : '';
+    }
+  } else {
+    // short link / share link biasa → pakai apa adanya
+    $mapClick = $raw;
+  }
+} elseif ($addr !== '') {
+  $mapClick = 'https://www.google.com/maps/search/?api=1&query='.rawurlencode($addr);
+}
+?>
+
+<ul class="social-links contact-actions">
+  <?php if ($tel): ?>
+    <li><a class="btn-icon" href="<?php echo htmlspecialchars('tel:'.$tel, ENT_QUOTES); ?>" title="Telepon"><i class="fa fa-phone"></i></a></li>
+  <?php endif; ?>
+  <?php if ($email !== ''): ?>
+    <li><a class="btn-icon" href="<?php echo htmlspecialchars('mailto:'.$email, ENT_QUOTES); ?>" title="Email"><i class="fa fa-envelope"></i></a></li>
+  <?php endif; ?>
+  <?php if ($mapClick !== ''): ?>
+    <li><a class="btn-icon" href="<?php echo htmlspecialchars($mapClick, ENT_QUOTES); ?>" target="_blank" rel="noopener" title="Lihat Lokasi"><i class="fa fa-map-marker"></i></a></li>
+  <?php endif; ?>
+</ul>
+
 
             <ul class="copyright">
                <li><?php echo $_settings->info('name') ?> &copy; Copyright <?php echo date('Y') ?></li>

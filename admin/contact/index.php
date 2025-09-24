@@ -37,40 +37,23 @@
 			                    <input type="text" class="form-control" name="email" value="<?php echo isset($meta['email']) ? $meta['email'] : '' ?>">
 		                	</div>
 						</div>
-						<div class="form-group">
-							<label for="" class="control-label">Facebook Link</label>
-							<div class="input-group">
-			                    <div class="input-group-prepend">
-			                      <span class="input-group-text"><i class="fa fa-facebook"></i></span>
-			                    </div>
-			                    <input type="text" class="form-control" name="facebook" value="<?php echo isset($meta['facebook']) ? $meta['facebook'] : '' ?>">
-		                	</div>
-						</div>
-						<div class="form-group">
-							<label for="" class="control-label">Twitter Link</label>
-							<div class="input-group">
-			                    <div class="input-group-prepend">
-			                      <span class="input-group-text"><i class="fa fa-twitter"></i></span>
-			                    </div>
-			                    <input type="text" class="form-control" name="twitter" value="<?php echo isset($meta['twiter']) ? $meta['twiter'] : '' ?>">
-		                	</div>
-						</div>
-						<div class="form-group">
-							<label for="" class="control-label">LinkedIn Link</label>
-							<div class="input-group">
-			                    <div class="input-group-prepend">
-			                      <span class="input-group-text"><i class="fa fa-linkedin"></i></span>
-			                    </div>
-			                    <input type="text" class="form-control" name="linkin" value="<?php echo isset($meta['linkin']) ? $meta['linkin'] : '' ?>">
-		                	</div>
-						</div>
+					<div class="form-group"> <label for="" class="control-label">Google Maps (embed URL / iframe)</label> <textarea name="map_embed" rows="3" class="form-control" placeholder='Tempelkan link yang diawali "https://www.google.com/maps/embed?..." atau seluruh tag <iframe> di sini'><?php echo isset($meta['map_embed']) ? htmlspecialchars($meta['map_embed']) : '' ?> </textarea> <small class="text-muted"> Contoh link (boleh paste full iframe juga):<br> https://www.google.com/maps/embed?pb=... </small> </div>
+
+						<!-- HAPUS / KOMENTARI blok Twitter & LinkedIn -->
+						<?php /*
+						// <div class="form-group">… name="twitter" …</div>
+						// <div class="form-group">… name="linkin" …</div>
+						*/ ?>
+
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-sm-6">
 						<div class="form-group">
-							<label for="" class="control-label">Address</label>
-				             <textarea name="address" id="" cols="30" rows="10" class="form-control "><?php echo (isset($address)) ? ($address) : '' ?></textarea>
+							<label class="control-label">Address</label>
+								<textarea name="address" cols="30" rows="10" class="form-control">
+								<?php echo isset($meta['address']) ? htmlspecialchars($meta['address'], ENT_QUOTES, 'UTF-8') : '' ?>
+								</textarea>
 						</div>
 					</div>
 				</div>
