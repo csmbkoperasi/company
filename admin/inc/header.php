@@ -6,7 +6,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   	<title><?php echo $_settings->info('title') != false ? $_settings->info('title').' | ' : '' ?><?php echo $_settings->info('name') ?></title>
-    <link rel="icon" href="<?php echo validate_image($_settings->info('logo')) ?>" />
+    <?php
+$logoUrl = validate_image($_settings->info('logo'));
+$logoFs  = base_app . $_settings->info('logo');      // base_app → path absolut root
+$logoVer = @filemtime($logoFs) ?: time();
+?>
+<link rel="icon" href="<?php echo $logoUrl.'?v='.$logoVer; ?>">
     <!-- Google Font: Source Sans Pro -->
     <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback"> -->
     <!-- Font Awesome -->

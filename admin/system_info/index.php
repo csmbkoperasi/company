@@ -112,3 +112,41 @@
 		    })
 	})
 </script>
+
+<script>
+$(function(){
+  $('#system-frm').off('submit').on('submit', function(e){
+    e.preventDefault();
+    start_loader();
+
+    const fd = new FormData(this);
+    $.ajax({
+      url: _base_url_ + "classes/SystemSettings.php?f=update_settings",
+      method: "POST",
+      data: fd,
+      dataType: "json",           // <— kita memang mengharap JSON
+      cache: false,
+      contentType: false,
+      processData: false,
+      success: function(resp){
+        end_loader();
+        if(resp && resp.status === 'success'){
+          alert_toast('System Info Successfully Updated.','success');
+          setTimeout(()=> location.reload(), 600);
+        }else{
+          $('#msg').html(
+            `<div class="alert alert-danger">${(resp && resp.message) ? resp.message : 'Update gagal.'}</div>`
+          );
+        }
+      },
+      error: function(xhr){
+        end_loader();
+        // tampilkan isi error PHP supaya ketahuan masalahnya
+        $('#msg').html(
+          `<pre class="alert alert-danger" style="white-space:pre-wrap">${xhr.responseText || 'Request error'}</pre>`
+        );
+      }
+    });
+  });
+});
+</script>

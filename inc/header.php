@@ -20,6 +20,8 @@
    <link rel="stylesheet" href="<?php echo base_url ?>profile_asset/css/media-queries.css">
    <link rel="stylesheet" href="<?php echo base_url ?>profile_asset/css/magnific-popup.css">
    <link rel="stylesheet" href="<?php echo base_url ?>dist/css/custom.css">
+   <link rel="stylesheet" href="<?php echo base_url ?>dist/css/custom.css?v=126">
+
 
    <!-- Script
    ================================================== -->

@@ -154,7 +154,7 @@ nav#nav-wrap.opaque {
 
 /* ===== Contact Section ===== */
 #contact_us.contact-section{
-  background:#00b0fc;        /* sesuai tema gelap situs kamu */
+  background:#FFC107;        /* sesuai tema gelap situs kamu */
   padding: 56px 0 72px;
   color:#e9eef4;
 }
@@ -274,3 +274,159 @@ nav#nav-wrap.opaque {
   color:#fff;transition:.2s
 }
 .contact-actions .btn-icon:hover{background:#fff;color:#111}
+
+/* =========  THEME TOKENS  ========= */
+:root{
+  --y: #FFC107;   /* Yellow */
+  --b: #1E88E5;   /* Blue   */
+  --k: #111111;   /* Black  */
+  --w: #FFFFFF;   /* White  */
+  --g: #9AA0A6;   /* Gray   */
+}
+
+/* =========  NAVBAR / MENU  ========= */
+#nav-wrap{
+  background: var(--k);
+  border-bottom: 2px solid var(--y);
+}
+#nav.nav li a{
+  color: var(--w) !important;
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+#nav.nav li a:hover,
+#nav.nav li.current a{
+  color: var(--y) !important;
+}
+#nav.nav li.current{
+  border-bottom: 3px solid var(--y);
+}
+
+/* =========  HERO ICONS (telepon / email / maps)  ========= */
+.contact-actions .btn-icon{
+  border-color: rgba(255,255,255,.85);
+  background: rgba(0,0,0,.25);
+}
+.contact-actions .btn-icon:hover{
+  background: var(--y);
+  color: var(--k);
+  border-color: var(--y);
+}
+
+/* =========  SECTION TITLES  ========= */
+section h1 span, section h2{
+  color: var(--k);
+}
+#testimonials .header-col h1 span { color: var(--w); }
+
+/* =========  KARTU / PANEL  ========= */
+.contact-card,
+.map-card,
+.card, .item, .portfolio-item .item-wrap{
+  background: var(--w);
+  color: var(--k);
+  border: 1px solid rgba(17,17,17,.06);
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+  border-radius: 16px;
+}
+
+/* tombol umum */
+.button, .btn, a.button{
+  background: var(--y);
+  color: var(--k) !important;
+  border: none;
+  font-weight: 700;
+}
+.button:hover, .btn:hover{
+  background: #e0aa05; /* darker yellow */
+}
+
+/* =========  LINK  ========= */
+a{ color: var(--b); }
+a:hover{ color: #1669c1; }
+
+/* =========  “Kontak & Lokasi” BG  ========= */
+.contact-section{
+  background: linear-gradient(180deg, var(--b) 0%, #19a0ff 100%);
+}
+.contact-title{ color: var(--k); }
+
+/* MAP iframe responsif sudah ada – tambahkan border radius */
+.map-responsive iframe{
+  border:0;
+  border-radius: 16px;
+  width: 100%;
+  height: 360px;
+}
+
+/* =========  FOOTER  ========= */
+footer{
+  background: var(--k);
+}
+footer .social-links a{
+  color: var(--w);
+}
+footer .social-links a:hover{
+  color: var(--y);
+}
+footer .copyright{ color: #d8d8d8; }
+
+/* =========  BADGE/HIGHLIGHT  ========= */
+hr{ border-top: 2px solid rgba(17,17,17,.08); }
+.highlight, mark{
+  background: linear-gradient(90deg, var(--y), #ffe082);
+  color: var(--k);
+  padding: .1rem .3rem;
+  border-radius: .25rem;
+}
+
+/* =========  TESTIMONIALS OVERLAY  ========= */
+#testimonials .filter-div{
+  background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.35));
+}
+#testimonials blockquote p, 
+#testimonials cite{ color: var(--w); }
+
+
+:root{
+  --brand-yellow:#ffc107;
+  --brand-white:#fff;
+  --brand-black:#111;
+}
+
+/* gaya dasar ikon bulat – dipakai di header & footer */
+header .contact-actions .btn-icon,
+footer .contact-actions .btn-icon{
+  width:44px; height:44px;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  background:transparent !important;
+  border:2px solid rgba(255,255,255,.85) !important;
+  color:var(--brand-white) !important;
+  text-decoration:none;
+  transition:all .2s ease;
+}
+
+/* hover kuning (SAMA di atas & bawah) */
+header .contact-actions .btn-icon:hover,
+footer .contact-actions .btn-icon:hover{
+  background:var(--brand-yellow) !important;
+  border-color:var(--brand-yellow) !important;
+  color:var(--brand-black) !important;
+}
+
+/* kalau sebelumnya ada class is-accent di footer, netralkan saja */
+footer .contact-actions .btn-icon.is-accent{
+  background:transparent !important;
+  border-color:rgba(255,255,255,.85) !important;
+  color:var(--brand-white) !important;
+}
+
+
+/* Ganti background section Testimonial/Staff */
+#testimonials .filter-div{
+  background-image: url('../images/bg-staff.png?v=1') !important;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}

@@ -198,13 +198,13 @@ $clickLink = build_click_from_input($rawMap, $addr);  // untuk tombol ikon peta
 
       <div class="row">
 
-         <div class="three columns">
+         <div class="two columns">
 
             <img class="profile-pic"  src="<?php echo validate_image($_settings->info('logo')) ?>" alt="" />
 
          </div>
 
-         <div class="nine columns main-col">
+         <div class="ten columns main-col">
 
             <h2>Tentang Kami</h2>
             <div id="about_me"><?php include "about.html"; ?></div>
@@ -239,11 +239,11 @@ $clickLink = build_click_from_input($rawMap, $addr);  // untuk tombol ikon peta
       ----------------------------------------------- -->
       <div class="row education">
 
-         <div class="three columns header-col">
+         <div class="two columns header-col">
             <h1><span>Layanan</span></h1>
          </div>
 
-         <div class="nine columns main-col">
+         <div class="ten columns main-col">
           <?php 
           $e_qry = $conn->query("SELECT * FROM services order by title asc");
           while($row = $e_qry->fetch_assoc()):
