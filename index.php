@@ -39,7 +39,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 
    <!-- Header
    ================================================== -->
-   <header id="home" style="background: #161415 url(<?php echo validate_image($_settings->info('banner')) ?>) no-repeat top center;">
+   <header id="home" style="background-image:url(<?php echo validate_image($_settings->info('banner')) ?>);">
 
       <nav id="nav-wrap">
 
@@ -154,30 +154,42 @@ $embedSrc  = build_embed_from_input($rawMap, $addr);  // untuk <iframe>
 $clickLink = build_click_from_input($rawMap, $addr);  // untuk tombol ikon peta
 ?>
 
-      <div class="row banner">
-         <div class="banner-text">
-            <h1 class="responsive-headline"><?php echo $_settings->info('name') ?></h1>
-            <h3><?php echo stripslashes($_settings->info('welcome_message')) ?></h3>
-            <hr />
-            
+<?php
+$hero_title    = trim($_settings->info('hero_title'))    ?: $_settings->info('name');
+$hero_subtitle = trim($_settings->info('hero_subtitle')) ?: stripslashes($_settings->info('welcome_message'));
+$hero_card     = validate_image($_settings->info('hero_card'));
+?>
+<div class="banner-flex">
+  <div class="banner-copy">
+    <div class="kicker">ELEGAN • PRESISI • ANDAL</div>
+    <h1><?php echo htmlspecialchars($hero_title, ENT_QUOTES) ?></h1>
+    <div class="subtitle"><?php echo htmlspecialchars($hero_subtitle, ENT_QUOTES) ?></div>
 
-<ul class="social contact-actions">
-  <?php if ($tel): ?>
-    <li><a href="<?= htmlspecialchars('tel:' . $tel, ENT_QUOTES) ?>" class="btn-icon" title="Telepon" aria-label="Telepon">
-      <i class="fa fa-phone"></i></a></li>
-  <?php endif; ?>
+    <!-- tombol telp/email/lokasi yang lama -->
+    <ul class="contact-actions">
+      <?php if ($tel): ?>
+      <li><a href="<?= htmlspecialchars('tel:' . $tel, ENT_QUOTES) ?>" class="btn-icon" title="Telepon"><i class="fa fa-phone"></i></a></li>
+      <?php endif; ?>
+      <?php if ($email !== ''): ?>
+      <li><a href="<?= htmlspecialchars('mailto:' . $email, ENT_QUOTES) ?>" class="btn-icon" title="Email"><i class="fa fa-envelope"></i></a></li>
+      <?php endif; ?>
+      <?php if ($clickLink !== ''): ?>
+      <li><a href="<?= htmlspecialchars($clickLink, ENT_QUOTES) ?>" target="_blank" rel="noopener" class="btn-icon" title="Lihat Lokasi"><i class="fa fa-map-marker"></i></a></li>
+      <?php endif; ?>
+    </ul>
+  </div>
 
-  <?php if ($email !== ''): ?>
-    <li><a href="<?= htmlspecialchars('mailto:' . $email, ENT_QUOTES) ?>" class="btn-icon" title="Email" aria-label="Email">
-      <i class="fa fa-envelope"></i></a></li>
-  <?php endif; ?>
+  <div class="banner-visual">
+    <?php if (!empty($_settings->info('hero_card'))): ?>
+      <div class="hero-card hero-card-wrap">
+        <span class="badge-iso">ISO 9001:2015</span>
+        <img src="<?php echo $hero_card ?>" alt="hero card">
+      </div>
+    <?php endif; ?>
+  </div>
+</div>
 
-  <?php if ($clickLink !== ''): ?>
-    <li><a href="<?= htmlspecialchars($clickLink, ENT_QUOTES) ?>" target="_blank" rel="noopener"
-           class="btn-icon" title="Lihat Lokasi" aria-label="Lihat Lokasi">
-      <i class="fa fa-map-marker"></i></a></li>
-  <?php endif; ?>
-</ul>
+
 
 
 
@@ -420,3 +432,7 @@ $clickLink = build_click_from_input($rawMap, $addr);  // untuk tombol ikon peta
       <?php require_once('inc/footer.php') ?>
   </body>
 </html>
+
+
+
+

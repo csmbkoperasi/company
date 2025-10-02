@@ -42,6 +42,46 @@
 				<label for="" class="control-label">Welcome Content</label>
 	             <textarea name="welcome_message" id="" cols="30" rows="5" class="form-control"><?php echo  stripslashes($_settings->info('welcome_message')) ?></textarea>
 			</div>
+			<!-- Hero Title -->
+<div class="form-group">
+  <label>Hero Title (judul besar)</label>
+  <input type="text" name="hero_title" class="form-control form-control-sm"
+         value="<?php echo $_settings->info('hero_title') ?>">
+</div>
+
+<!-- Hero Subtitle -->
+<div class="form-group">
+  <label>Hero Subtitle (teks di bawah judul)</label>
+  <input type="text" name="hero_subtitle" class="form-control form-control-sm"
+         value="<?php echo $_settings->info('hero_subtitle') ?>">
+</div>
+
+<!-- Hero Card Image -->
+<div class="form-group">
+  <label>Hero Card Image (gambar samping judul)</label>
+  <div class="custom-file">
+    <input type="file" class="custom-file-input" id="heroCard" name="hero_card"
+           onchange="displayHero(this)">
+    <label class="custom-file-label" for="heroCard">Choose file</label>
+  </div>
+</div>
+<div class="form-group d-flex">
+  <img id="hero_preview"
+       src="<?php echo validate_image($_settings->info('hero_card')) ?>"
+       style="max-width:320px;border-radius:16px;object-fit:cover;">
+</div>
+
+<script>
+function displayHero(input){
+  if(input.files && input.files[0]){
+    const r = new FileReader();
+    r.onload = e => document.getElementById('hero_preview').src = e.target.result;
+    r.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+
+
 			<div class="form-group">
 				<label for="" class="control-label">System Logo</label>
 				<div class="custom-file">
@@ -96,6 +136,13 @@
 	        reader.readAsDataURL(input.files[0]);
 	    }
 	}
+	function displayHeroCard(input){
+  if (input.files && input.files[0]) {
+    const rd = new FileReader();
+    rd.onload = e => $('#cimgHeroCard').attr('src', e.target.result);
+    rd.readAsDataURL(input.files[0]);
+  }
+}
 	$(document).ready(function(){
 		 $('.summernote').summernote({
 		        height: 200,

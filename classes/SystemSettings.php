@@ -68,22 +68,54 @@ class SystemSettings extends DBConnection{
         };
 
         // 3) Upload LOGO
-        if (isset($_FILES['img']) && is_uploaded_file($_FILES['img']['tmp_name'])) {
-            $newRel = $upRelDir . '/' . $safe($_FILES['img']['name']);
-            $newAbs = $baseDir . DIRECTORY_SEPARATOR . $newRel;
-            if (!move_uploaded_file($_FILES['img']['tmp_name'], $newAbs)) {
-                throw new Exception('Gagal upload logo.');
-            }
-            if (!empty($_SESSION['system_info']['logo'])) {
-                $old = $baseDir . DIRECTORY_SEPARATOR . $_SESSION['system_info']['logo'];
-                if (is_file($old)) @unlink($old);
-            }
-            $this->conn->query(
-                "INSERT INTO system_info (meta_field, meta_value)
-                 VALUES('logo','{$this->conn->real_escape_string($newRel)}')
-                 ON DUPLICATE KEY UPDATE meta_value = VALUES(meta_value)"
-            );
-        }
+		
+if (isset($_FILES['img']) && is_uploaded_file($_FILES['img']['tmp_name'])) {
+    $rootDir  = dirname(__DIR__);           // .../admin/classes
+    $baseDir  = dirname($rootDir);          // project root
+    $upRelDir = 'uploads';
+    $upAbsDir = $baseDir . DIRECTORY_SEPARATOR . $upRelDir;
+    if (!is_dir($upAbsDir)) { @mkdir($upAbsDir, 0755, true); }
+
+    $safe = function($n){ return preg_replace('/[^A-Za-z0-9._-]/','_', $n); };
+    $newRel = $upRelDir.'/'.date('Ymd_His').'_'.$safe($_FILES['img']['name']);
+    $newAbs = $baseDir . DIRECTORY_SEPARATOR . $newRel;
+
+    if (!move_uploaded_file($_FILES['img']['tmp_name'], $newAbs)) {
+        throw new Exception('Gagal upload logo.');
+    }
+
+    // hapus file lama kalau ada
+    if (isset($_SESSION['system_info']['logo'])) {
+        $oldAbs = $baseDir . DIRECTORY_SEPARATOR . $_SESSION['system_info']['logo'];
+        if (is_file($oldAbs)) @unlink($oldAbs);
+    }
+
+    // simpan/overwrite satu baris saja
+    $this->conn->query("
+        INSERT INTO system_info (meta_field, meta_value)
+        VALUES ('logo', '{$newRel}')
+        ON DUPLICATE KEY UPDATE meta_value = VALUES(meta_value)
+    ");
+}
+// ----- Upload HERO CARD -----
+if(isset($_FILES['hero_card']) && is_uploaded_file($_FILES['hero_card']['tmp_name'])){
+    $newRel = 'uploads/'.date('Ymd_His').'_'.preg_replace('/[^A-Za-z0-9._-]/','_', $_FILES['hero_card']['name']);
+    $newAbs = $baseDir . DIRECTORY_SEPARATOR . $newRel; // pastikan $baseDir sudah didefinisikan spt blok logo/banner
+
+    if(!move_uploaded_file($_FILES['hero_card']['tmp_name'], $newAbs)){
+        echo "UPLOAD_ERR_HERO_CARD"; return false;
+    }
+    if(isset($_SESSION['system_info']['hero_card']) && is_file($baseDir.'/'.$_SESSION['system_info']['hero_card'])){
+        @unlink($baseDir.'/'.$_SESSION['system_info']['hero_card']);
+    }
+    $this->conn->query(
+        "INSERT INTO system_info (meta_field, meta_value)
+         VALUES ('hero_card', '{$newRel}')
+         ON DUPLICATE KEY UPDATE meta_value = VALUES(meta_value)"
+    );
+}
+
+
 
         // 4) Upload BANNER
         if (isset($_FILES['img_banner']) && is_uploaded_file($_FILES['img_banner']['tmp_name'])) {

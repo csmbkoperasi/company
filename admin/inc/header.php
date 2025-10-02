@@ -7,11 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   	<title><?php echo $_settings->info('title') != false ? $_settings->info('title').' | ' : '' ?><?php echo $_settings->info('name') ?></title>
     <?php
-$logoUrl = validate_image($_settings->info('logo'));
-$logoFs  = base_app . $_settings->info('logo');      // base_app → path absolut root
-$logoVer = @filemtime($logoFs) ?: time();
+$logoRel   = $_settings->info('logo');           // contoh: uploads/20250930_logo.jpg
+$logoUrl   = validate_image($logoRel);           // URL absolut
+$logoFile  = base_app . $logoRel;                // path absolut di disk
+$logoVer   = is_file($logoFile) ? filemtime($logoFile) : time();
 ?>
 <link rel="icon" href="<?php echo $logoUrl.'?v='.$logoVer; ?>">
+
     <!-- Google Font: Source Sans Pro -->
     <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback"> -->
     <!-- Font Awesome -->
